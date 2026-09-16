@@ -21,14 +21,16 @@ bool on = false;
 #define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define BLINK_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 
+
 void blink_task(__unused void *params) {
     hard_assert(cyw43_arch_init() == PICO_OK);
     while (true) {
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
         if (count++ % 11) on = !on;
-        vTaskDelay(500);
+        vTaskDelay(250);
     }
 }
+
 
 void main_task(__unused void *params) {
     xTaskCreate(blink_task, "BlinkThread",
@@ -51,4 +53,5 @@ int main( void )
                 MAIN_TASK_STACK_SIZE, NULL, MAIN_TASK_PRIORITY, &task);
     vTaskStartScheduler();
     return 0;
+
 }
