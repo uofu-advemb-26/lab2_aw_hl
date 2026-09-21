@@ -18,9 +18,7 @@ Isolate tasks and offload logic to functions.
 Write unit tests with UNITY testing framework to test the behavior of the offloaded task logic.
 
 Use specific unity assertions like:
-/begin{itemize}
-/item{TEST_ASSERT_EQUAL_INT, to test char logic, register values for led, local variables, etc} //
-/end{itemize}
+1. TEST_ASSERT_EQUAL_INT, to test char logic, register values for led, local variables, etc.
 
 ### 3. Expected Behavior
 
