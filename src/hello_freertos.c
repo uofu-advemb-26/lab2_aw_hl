@@ -8,6 +8,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "hello_fr_helpers.h"
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -44,11 +45,10 @@ void main_task(__unused void *params) {
                 BLINK_TASK_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
     char c;
     while(c = getchar()) { // get char is hardware call from picosdk i think
-        if (c <= 'z' && c >= 'a') putchar(c - 32); // if the received char is lowercase, output the same value, sub 32 (uppercase)
-        else if (c >= 'A' && c <= 'Z') putchar(c + 32); // if received char (from somewehre) is uppercase, output same value + 32
-        else putchar(c);
+        putchar(char_case_reverse(c));
     }
 }
+
 
 int main( void ) // on boot, execution starts here
 {
