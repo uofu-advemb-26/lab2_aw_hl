@@ -33,7 +33,8 @@ void blink_task(__unused void *params) {
     bool on = false;
     // no return statment
     while (true) {
-        handle_led(&count, on);
+        on = handle_led(&count, on);
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on); // architecture call t turn led to on value
         vTaskDelay(250);    // pause task
     }
 }

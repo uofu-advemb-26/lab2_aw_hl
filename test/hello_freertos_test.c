@@ -72,7 +72,7 @@ void test_light_switch_should_toggle()
     int test_count = 11;
     bool pre_toggle = on; 
 
-    on = toggle_led(test_count);  // with test count == 11, on should not toggle
+    on = toggle_led(test_count, on);  // with test count == 11, on should not toggle
     TEST_ASSERT_EQUAL_CHAR_MESSAGE(pre_toggle, on, "ERROR: expected led on status diffeered from actual. LED Toggled when it shouldnt have");
 }
 
@@ -82,9 +82,39 @@ void test_light_switch_dont_toggle(void){
     bool on;
     bool pre_toggle = on;
 
-    on = toggle_led(test_count);
+    on = toggle_led(test_count, on);
     TEST_ASSERT_NOT_EQUAL_CHAR_MESSAGE(pre_toggle, on, "ERROR: expected led on status diffeered from actual. LED did not toggle when it should have");
 }
+
+void test_toggle_led_toggles_on_non_multiple_of_11(void) {
+    bool result = toggle_led(1, false);
+    TEST_ASSERT_TRUE_MESSAGE(result, "ERROR: Expected toggle when count is not a multiple of 11");
+}
+
+void test_toggle_led_holds_on_multiple_of_11(void) {
+    bool result = toggle_led(11, true);
+    TEST_ASSERT_TRUE_MESSAGE(result, "ERROR: Expected state to stay the same when count is a multiple of 11");
+}
+
+void test_handle_led_increments_count(void) {
+    int count = 0;
+    handle_led(&count, false);
+    TEST_ASSERT_EQUAL_INT_MESSAGE(1, count, "ERROR: Expected count to increment by 1");
+}
+
+void test_handle_led_returns_toggled_state(void) {
+    int count = 1; // 1 % 11 != 0, should toggle
+    bool result = handle_led(&count, false);
+    TEST_ASSERT_TRUE_MESSAGE(result, "ERROR: Expected on to toggle from false to true");
+}
+
+void test_handle_led_holds_state_at_multiple_of_11(void) {
+    int count = 11; // 11 % 11 == 0, should NOT toggle
+    bool result = handle_led(&count, true);
+    TEST_ASSERT_TRUE_MESSAGE(result, "ERROR: Expected on to remain true when count is a multiple of 11");
+}
+
+
 int main (void)
 {
     stdio_init_all();
@@ -97,6 +127,11 @@ int main (void)
         RUN_TEST(test_char_case_logic);
         RUN_TEST(test_light_switch_should_toggle);
         RUN_TEST(test_light_switch_dont_toggle);
+        RUN_TEST(test_toggle_led_toggles_on_non_multiple_of_11);
+        RUN_TEST(test_toggle_led_holds_on_multiple_of_11);
+        RUN_TEST(test_handle_led_increments_count);
+        RUN_TEST(test_handle_led_returns_toggled_state);
+        RUN_TEST(test_handle_led_holds_state_at_multiple_of_11);
         sleep_ms(5000);
         UNITY_END();
     }

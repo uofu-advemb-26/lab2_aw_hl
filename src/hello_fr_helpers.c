@@ -20,17 +20,15 @@ char char_case_reverse(char c) {
 
 
 
-bool toggle_led(int count){
-    bool on;
+bool toggle_led(int count, bool on){
     if (count % 11) 
         on = !on;
     return on;
 }
 
 
-void handle_led(int* pcount, bool on){
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on); // architecture call t turn led to on value
-        
-    on = toggle_led(*pcount); // toggle on if count is divisible by 11 ? and increment count!
+bool handle_led(int* pcount, bool on){
+    bool new_on = toggle_led(*pcount, on); // toggle on if count is divisible by 11 ? and increment count!
     (*pcount)++;
+    return new_on;
 }
