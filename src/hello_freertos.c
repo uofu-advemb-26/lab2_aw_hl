@@ -14,15 +14,14 @@
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
 
-// states
-int count = 0; 
-bool on = false;
-
 // priority of main task is 1 above the idle task priority?
 #define MAIN_TASK_PRIORITY      ( tskIDLE_PRIORITY + 1UL )
 #define BLINK_TASK_PRIORITY     ( tskIDLE_PRIORITY + 2UL )
 #define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define BLINK_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
+
+
+
 
 // blink task does not use any params
 void blink_task(__unused void *params) {
@@ -30,24 +29,32 @@ void blink_task(__unused void *params) {
     // i assume this is a like a test call to verify that the arch init is equal to the pico ok value. 
     hard_assert(cyw43_arch_init() == PICO_OK);
 
+    int count = 0;
+    bool on = false;
     // no return statment
     while (true) {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on); // architecture call t turn led to on value
-        if (count++ % 11) on = !on; // toggle on if count is divisible by 11 ? and increment count!
+        handle_led(&count, on);
         vTaskDelay(250);    // pause task
     }
 }
+
+void process_char(void){
+    char c = getchar();
+    putchar(char_case_reverse(c));
+}
+
 
 
 void main_task(__unused void *params) {
     // main task runs subthreads with the priority and stuff
     xTaskCreate(blink_task, "BlinkThread",
                 BLINK_TASK_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
-    char c;
-    while(c = getchar()) { // get char is hardware call from picosdk i think
-        putchar(char_case_reverse(c));
+
+    while(true) { // get char is hardware call from picosdk i think
+        process_char();
     }
 }
+
 
 
 int main( void ) // on boot, execution starts here
